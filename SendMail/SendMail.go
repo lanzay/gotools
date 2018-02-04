@@ -19,7 +19,7 @@ func SendMail(smtpServer string, auth smtp.Auth, from mail.Address, to mail.Addr
 
 	header := make(map[string]string)
 	
-	header["Message-ID"] = "PL-001"
+	header["Message-ID"] = "PL-001" //TODO
 	header["From"] = from.String()
 	header["To"] = to.String()
 	header["Subject"] = encodeRFC2047(title)
