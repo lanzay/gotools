@@ -3,7 +3,6 @@ package sendmail
 import (
 	"fmt"
 	"net/smtp"
-	"log"
 	"crypto/tls"
 	"net"
 	"net/mail"
