@@ -12,7 +12,7 @@ import (
 	//"mime/multipart"
 )
 
-func SendMail(smtpServer string, auth smtp.Auth, from mail.Address, to mail.Address, title string, body string, jpg map[string][]byte)  {
+func SendMail(smtpServer string, auth smtp.Auth, from mail.Address, to mail.Address, title string, body string, jpg map[string][]byte) error {
 	
 	var err error
 	smtpHost, _, _ := net.SplitHostPort(smtpServer)
@@ -54,31 +54,40 @@ func SendMail(smtpServer string, auth smtp.Auth, from mail.Address, to mail.Addr
 	}
 	conn, err := tls.Dial("tcp", smtpServer, tlsConfig)
 	if err != nil {
-		log.Fatal(err)
+		return err
+		//log.Fatal(err)
 	}
 	c, err := smtp.NewClient(conn, smtpHost)
 	if err != nil {
-		log.Fatal(err)
+		return err
+		//log.Fatal(err)
 	}
 	if err := c.Auth(auth); err != nil {
-		log.Panicln(err)
+		return err
+		//log.Panicln(err)
 	}
 	
 	if err = c.Mail(from.Address); err != nil {
-		log.Panicln(err)
+		return err
+		//log.Panicln(err)
 	}
 	if err = c.Rcpt(to.Address); err != nil {
-		log.Panicln(err)
+		return err
+		//log.Panicln(err)
 	}
 	if w, err := c.Data(); err != nil {
-		log.Panicln(err)
+		return err
+		//log.Panicln(err)
 	} else {
-		w.Write([]byte(message))
-		w.Close()
 		defer w.Close()
+		if _, err = w.Write([]byte(message)); err != nil {
+			return err
+		}
+		w.Close()
 	}
 	
-	c.Quit()
+	err = c.Quit()
+	return err
 }
 
 func encodeRFC2047(String string) string {
