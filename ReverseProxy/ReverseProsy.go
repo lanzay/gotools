@@ -1,4 +1,4 @@
-package main
+package proxy
 
 import (
 	"net/http/httputil"
@@ -6,11 +6,13 @@ import (
 	"net/http"
 	"fmt"
 	"github.com/BurntSushi/toml"
-	"strconv"
+	"log"
+	"os"
 )
 
 type (
 	Proxy struct {
+		ListenHost  string
 		ListenPort  int
 		DefaultHost string
 		Hosts       []Host
@@ -24,10 +26,10 @@ type (
 
 var proxyCfg Proxy
 
-func main() {
+func Run(fileConfig string) {
 	
 	proxyCfg.Proxy = make(map[string]*httputil.ReverseProxy)
-	if _, err := toml.DecodeFile("proxy.cfg", &proxyCfg); err != nil {
+	if _, err := toml.DecodeFile(fileConfig, &proxyCfg); err != nil {
 		fmt.Println(err)
 	}
 	
@@ -37,18 +39,23 @@ func main() {
 	}
 	
 	http.HandleFunc("/", handleProxy)
-	http.ListenAndServe(":"+strconv.Itoa(proxyCfg.ListenPort), nil)
+	
+	listenAddr := fmt.Sprintf("%s:%d", proxyCfg.ListenHost, proxyCfg.ListenPort)
+	log.Printf("Start reverse proxy on %s...\n", listenAddr)
+	log.Println(http.ListenAndServe(listenAddr, nil))
 }
 
 func handleProxy(w http.ResponseWriter, r *http.Request) {
 	
 	dr, _ := httputil.DumpRequest(r, false)
-	fmt.Println(string(dr))
+	if env := os.Getenv("ENV"); env == "DEV" {
+		log.Println(string(dr))
+	}
 	
 	if rp, ok := proxyCfg.Proxy[r.Host]; ok == true {
 		rp.ServeHTTP(w, r)
 	} else {
-		fmt.Printf("[ERR] Default Host %s\n", proxyCfg.DefaultHost)
+		log.Printf("[WARNING] Default Host %s\n", proxyCfg.DefaultHost)
 		proxyCfg.Proxy[proxyCfg.DefaultHost].ServeHTTP(w, r)
 	}
 	
