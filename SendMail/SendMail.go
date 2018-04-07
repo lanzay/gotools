@@ -11,14 +11,14 @@ import (
 	
 )
 
-func SendMail(smtpServer string, auth smtp.Auth, from mail.Address, to mail.Address, title string, body string, jpg, att map[string][]byte) error {
+func SendMail(smtpServer string, auth smtp.Auth, from mail.Address, to mail.Address, title string, body string, id string, jpg, att map[string][]byte) error {
 	
 	var err error
 	smtpHost, _, _ := net.SplitHostPort(smtpServer)
 
 	header := make(map[string]string)
 	
-	//header["Message-ID"] = "PL-0001" //TODO
+	header["Message-ID"] = id //TODO
 	header["From"] = from.String()
 	header["To"] = to.String()
 	header["Subject"] = encodeRFC2047(title)
