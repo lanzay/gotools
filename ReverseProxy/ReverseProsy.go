@@ -8,6 +8,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"log"
 	"os"
+	"net"
 )
 
 type (
@@ -51,6 +52,9 @@ func handleProxy(w http.ResponseWriter, r *http.Request) {
 	if env := os.Getenv("ENV"); env == "DEV" {
 		log.Println(string(dr))
 	}
+	
+	host, _,_ := net.SplitHostPort(r.RemoteAddr)
+	log.Printf("%s => %s%s \tUA:%s\n", host, r.Host, r.RequestURI, r.UserAgent())
 	
 	if rp, ok := proxyCfg.Proxy[r.Host]; ok == true {
 		rp.ServeHTTP(w, r)

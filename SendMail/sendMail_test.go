@@ -25,6 +25,7 @@ func TestSendMail(T *testing.T) {
 	to := mail.Address{"UserName", "username@yandex.ru"}
 	
 	jpg := make(map[string][]byte)
+	att := make(map[string][]byte)
 	
 	var err error
 	if jpg["test_jpg"], err = ioutil.ReadFile("test_jpg.jpg"); err != nil {
@@ -36,6 +37,10 @@ func TestSendMail(T *testing.T) {
 	}
 	
 	if jpg["test_png"], err = ioutil.ReadFile("test_png.png"); err != nil {
+		log.Panic(err)
+	}
+	
+	if att["test_png"], err = ioutil.ReadFile("test_png.png"); err != nil {
 		log.Panic(err)
 	}
 	
@@ -51,6 +56,7 @@ func TestSendMail(T *testing.T) {
 		<br><IMG SRC="cid:test_png" BORDER=0 HEIGHT=100 WIDTH=100 ALT="image - картинка 3">
 		`,
 		jpg,
+		att,
 	)
 	
 }

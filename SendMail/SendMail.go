@@ -8,17 +8,17 @@ import (
 	"net/mail"
 	"strings"
 	"encoding/base64"
-	//"mime/multipart"
+	
 )
 
-func SendMail(smtpServer string, auth smtp.Auth, from mail.Address, to mail.Address, title string, body string, jpg map[string][]byte) error {
+func SendMail(smtpServer string, auth smtp.Auth, from mail.Address, to mail.Address, title string, body string, jpg, att map[string][]byte) error {
 	
 	var err error
 	smtpHost, _, _ := net.SplitHostPort(smtpServer)
 
 	header := make(map[string]string)
 	
-	header["Message-ID"] = "PL-001" //TODO
+	//header["Message-ID"] = "PL-0001" //TODO
 	header["From"] = from.String()
 	header["To"] = to.String()
 	header["Subject"] = encodeRFC2047(title)
@@ -43,7 +43,18 @@ func SendMail(smtpServer string, auth smtp.Auth, from mail.Address, to mail.Addr
 			"Content-Transfer-Encoding: base64" + "\n" + "\r\n" +
 			base64.StdEncoding.EncodeToString(jpgBody) + "\r\n"
 	}
+	
+	for attName, attBody := range att {
+		message += "--b01" + "\r\n" +
+			//"Content-Type: multipart/mixed" + "\n" +
+			"Content-Type: application/octet-stream" + "\n" +
+			"Content-Disposition: attachment; filename=\""+ attName + "\" \n" +
+			"Content-Transfer-Encoding: base64" + "\n" + "\r\n" +
+			base64.StdEncoding.EncodeToString(attBody) + "\r\n"
+	}
+	
 	message += "\r\n" + "--b01--" + "\r\n"
+	message += "\n\r" + "." + "\n\r"
 	
 	//log.Println(message)
 	
@@ -54,7 +65,7 @@ func SendMail(smtpServer string, auth smtp.Auth, from mail.Address, to mail.Addr
 	conn, err := tls.Dial("tcp", smtpServer, tlsConfig)
 	if err != nil {
 		return err
-		//log.Fatal(err)
+		//log.Panicln(err)
 	}
 	c, err := smtp.NewClient(conn, smtpHost)
 	if err != nil {
