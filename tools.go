@@ -1,4 +1,4 @@
-package go_tools
+package gotools
 
 import (
 	"bytes"
@@ -28,7 +28,7 @@ func Max(args ...int) int {
 	return max
 }
 
-func Substring(s string, lenS int) string {
+func LeftRuneValid(s string, lenS int) string {
 
 	by := []byte(s)
 	posE := Min(lenS, len(s))
@@ -52,7 +52,7 @@ func Substring(s string, lenS int) string {
 }
 
 //Получить левую часть строки до целого количества RUNE - не ломая кодировку
-func LeftRune(str string, l int) string {
+func LeftRuneMax(str string, l int) string {
 
 	if len(str) > l {
 		ch := []rune(str)

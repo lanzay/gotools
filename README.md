@@ -1,8 +1,10 @@
 # go-tools
 
 Сборник небоьших библиотек/инструментов
+### LeftRuneValid(s string, lenS int) string
+Получает точное количество символов слева и проверяет на валидность итоговую строку 
 
-### LeftRune(str string, l int) string
+### LeftRuneMax(str string, l int) string
 Получить левую часть строки до целого количества RUNE - не ломая кодировку
 
 
