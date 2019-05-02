@@ -2,6 +2,7 @@ package go_tools
 
 import (
 	"bytes"
+	"log"
 	"unicode/utf8"
 )
 
@@ -83,4 +84,23 @@ func SubByte(body []byte, startStr string, startShift int, finStr string, finShi
 	sub := body[start : start+fin]
 	return sub
 
+}
+
+func ErrPanic(err error) {
+
+	if err != nil {
+		log.Panicln("[F]", err)
+	}
+}
+func ErrPrint(err error) {
+
+	if err != nil {
+		log.Println("[F]", err)
+	}
+}
+func ErrPanicDebug(err error) {
+
+	if err != nil {
+		log.Panicln("[F] DEB ", err)
+	}
 }
