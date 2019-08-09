@@ -1,4 +1,4 @@
-# go-tools
+# gotools
 
 Сборник небоьших библиотек/инструментов
 ### LeftRuneValid(s string, lenS int) string

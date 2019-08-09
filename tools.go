@@ -1,8 +1,10 @@
-package gotools
+package tools
 
 import (
 	"bytes"
 	"log"
+	"strconv"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -56,11 +58,11 @@ func LeftRuneMax(str string, l int) string {
 
 	if len(str) > l {
 		ch := []rune(str)
-		result := make([]rune, 0, l)
+		result := make([]rune, 0, l+1)
 		for i := range ch {
 			result = append(result, ch[i])
 			if len(string(result)) > l {
-				resultStr := string(result[:i-1])
+				resultStr := string(result[:i])
 				return resultStr
 			}
 		}
@@ -72,6 +74,9 @@ func LeftRuneMax(str string, l int) string {
 //также задается смещение границ относительо поисковых строк
 func SubByte(body []byte, startStr string, startShift int, finStr string, finShift int) []byte {
 
+	if body == nil {
+		return nil
+	}
 	start := bytes.Index(body, []byte(startStr)) + startShift
 	if start <= 0 {
 		return nil
@@ -103,4 +108,40 @@ func ErrPanicDebug(err error) {
 	if err != nil {
 		log.Panicln("[F] DEB ", err)
 	}
+}
+
+func Atoi(str string) (int, error) {
+
+	str = strings.ReplaceAll(str, " ", "")
+	return strconv.Atoi(str)
+}
+
+func AtoiMust(str string) int {
+
+	x, _ := Atoi(str)
+	return x
+}
+
+func EscapeSQL(str string) string {
+
+	str = strings.ReplaceAll(str, "`", "'")
+	str = strings.ReplaceAll(str, "'", "''")
+	str = strings.ReplaceAll(str, "--", "-")
+	return str
+
+}
+func LeftEscapeSQL(str string, l int) string {
+
+	tmp := strings.ReplaceAll(str, "`", "'")
+	tmp = strings.ReplaceAll(tmp, "'", "''")
+	tmp = strings.ReplaceAll(tmp, "--", "-")
+	tmp = LeftRuneMax(tmp, l)
+
+	if len(tmp) == l {
+		tmp = strings.ReplaceAll(tmp, "'", "")
+		tmp = strings.ReplaceAll(tmp, "`", "")
+	}
+
+	return tmp
+
 }
